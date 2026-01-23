@@ -1,7 +1,7 @@
 baseURL = "https://zhangk.github.io/my-joplin-notes/"
 languageCode = "en-us"
 title = "My Joplin Notes"
-theme = "ananke"
+# theme = "ananke"
 
 [params]
   subtitle = "Published from Joplin"
