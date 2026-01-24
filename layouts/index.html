@@ -104,18 +104,22 @@
                 return;
             }
             let html = '<ul>';
-            // 关键修改：将过滤条件从 "post" 改为 "posts"
+            // 关键修正：比较前清理字段值首尾的引号，并对清理后的日期字符串进行排序
             const articles = siteData.pages
-                .filter(p => p.type === 'posts') // <-- 这里改成 'posts'
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
+                .filter(p => p.type.replace(/^"|"$/g, '') === 'posts') // 清理引号后再比较
+                .sort((a, b) => new Date(b.date.replace(/^"|"$/g, '')) - new Date(a.date.replace(/^"|"$/g, '')));
         
             articles.forEach(article => {
+                // 在插入时也清理标题和链接的引号，使显示更整洁
+                const cleanTitle = article.title.replace(/^"|"$/g, '');
+                const cleanPermalink = article.permalink.replace(/^"|"$/g, '');
+                const cleanDate = article.date.replace(/^"|"$/g, '');
                 html += `
                     <li>
-                        <a href="${article.permalink}">
-                            <strong>${article.title}</strong>
+                        <a href="${cleanPermalink}">
+                            <strong>${cleanTitle}</strong>
                         </a>
-                        <span style="color:#666; font-size:0.9em;"> - ${formatDate(article.date)}</span>
+                        <span style="color:#666; font-size:0.9em;"> - ${formatDate(cleanDate)}</span>
                     </li>
                 `;
             });
