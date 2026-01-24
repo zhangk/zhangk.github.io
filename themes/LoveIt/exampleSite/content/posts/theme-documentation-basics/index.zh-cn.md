@@ -288,7 +288,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
 
   # 作者配置
   [params.author]
-    name = "xxxx"
+    name = "ZhangK"
     email = ""
     link = ""
 
@@ -416,13 +416,13 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
 
   # 作者的社交信息设置
   [params.social]
-    GitHub = "xxxx"
+    GitHub = "ZhangK"
     Linkedin = ""
-    X = "xxxx" # {{< version 0.3.1 >}}
+    X = "ZhangK" # {{< version 0.3.1 >}}
     Twitter = "" # {{< version 0.3.1 deprecated >}}
-    Instagram = "xxxx"
-    Facebook = "xxxx"
-    Telegram = "xxxx"
+    Instagram = "ZhangK"
+    Facebook = "ZhangK"
+    Telegram = "ZhangK"
     Medium = ""
     Gitlab = ""
     Youtubelegacy = ""
