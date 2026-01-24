@@ -43,6 +43,17 @@ jobs:
           echo "========== 3. 特别检查根目录的 JSON 和 HTML 文件 =========="
           find public -maxdepth 1 -type f \( -name "*.json" -o -name "*.html" \) | head -20
 
+      - name: Upload Index to Algolia
+        # 使用一个社区维护的、专门为Hugo设计的Algolia上传工具
+        uses: peierlu/algolia-hugo@v1.2.1
+        with:
+          # 指定Hugo生成的索引文件路径
+          index-file: 'public/index.json'
+          # 从GitHub Secrets中读取你在第二阶段设置的机密信息
+          app-id: ${{ secrets.ALGOLIA_APP_ID }}
+          admin-api-key: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+          index-name: ${{ secrets.ALGOLIA_INDEX_NAME }}
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
