@@ -4,6 +4,8 @@ timeZone = "Asia/Shanghai"
 title = "ZhangK’s Blog"
 author = "ZhangK"
 theme = "LoveIt"
+[outputs]
+  home = ["HTML", "JSON", "RSS"]
 [params.search]
   enable = true
   # 类型选择 "lunr"
