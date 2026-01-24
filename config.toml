@@ -8,11 +8,11 @@ theme = "LoveIt"
   home = ["HTML", "JSON", "RSS"]
 [params.search]
   enable = true
-  # 类型选择 "lunr"
-  type = "lunr"
-  # 搜索结果中显示的内容长度
+  type = "algolia"  # 类型改为 algolia
   contentLength = 4000
-  # 最大结果显示数量
-  maxResultLength = 20
-  wildcard = "enabled"
-  language = "zh"
+  maxResultLength = 10
+  [params.search.algolia]
+    index = "zhangk_blog"  # 填写你创建的索引名称
+    appID = "30WY2DYYB1"  # 粘贴你的 Application ID
+    searchKey = "cdf22c87b449280f726df09efc58b84a"  # 粘贴你的 Search-Only API Key
+    # 注意：这里不要填 Admin API Key！
