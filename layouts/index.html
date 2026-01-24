@@ -1,36 +1,19 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+{{ define "main" }}
+<!doctype html>
+<html lang="{{ .Site.LanguageCode }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZhangK's Private Blog</title>
+    <!-- 让Hugo插入主题的所有头部元素（CSS、Meta等） -->
+    {{ partial "head.html" . }}
     <style>
-        /* 初始状态：显示密码页，隐藏博客容器 */
-        #blogContainer {
-            display: none;
-        }
-        .auth-body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        .auth-box {
-            background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        input, button { padding: 12px; margin: 5px; }
+        /* 我们自定义的密码页样式，仅在未认证时生效 */
+        .auth-body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .auth-box { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.1); text-align: center; }
+        #blogContainer { display: none; } /* 初始隐藏博客容器 */
     </style>
+    <!-- 注入文章数据 -->
     {{ partial "blog-data.html" . }}
 </head>
 <body class="auth-body">
-
     <!-- 密码验证界面 -->
     <div id="authBox" class="auth-box">
         <h2>🔒 私人博客</h2>
@@ -41,30 +24,35 @@
     </div>
 
     <!-- 博客内容容器 (验证后显示) -->
+    <!-- 这里将包裹整个主题的 body 内容 -->
     <div id="blogContainer">
-        <!-- 这里将由JavaScript动态填充博客标题和文章列表 -->
-        <h1>我的博客</h1>
-        <div id="articleList"></div>
+        <!-- 主题的头部导航栏 (应包含搜索框) -->
+        {{ partial "header.html" . }}
+        
+        <!-- 主题的主内容区域 -->
+        <main>
+            <!-- 这里可以显示文章列表，我们稍后填充 -->
+            <div id="dynamicContent">
+                <h1>我的博客</h1>
+                <div id="articleList"></div>
+            </div>
+        </main>
+        
+        <!-- 主题的页脚等 -->
+        {{ partial "footer.html" . }}
     </div>
 
+    <!-- 让Hugo插入主题的所有尾部JS（包括搜索功能） -->
+    {{ partial "foot.html" . }}
+
     <script>
-        // ========== 配置 ==========
-        // !!! 重要：替换为你的密码哈希 !!!
         const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
-        // 我们将从Hugo模板注入的文章数据
         const siteData = window.__HUGO_SITE_DATA__ || { pages: [] };
 
-        // ========== 主逻辑 ==========
         window.addEventListener('DOMContentLoaded', () => {
             const savedHash = localStorage.getItem('auth_hash');
-            
             if (savedHash === correctHash) {
-                // 已认证，直接显示博客
                 showBlogContent();
-            } else {
-                // 未认证，显示密码界面
-                document.body.classList.add('auth-body');
-                document.getElementById('authBox').style.display = 'block';
             }
         });
 
@@ -77,9 +65,7 @@
             const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
             if (inputHash === correctHash) {
-                // 1. 保存认证状态
                 localStorage.setItem('auth_hash', inputHash);
-                // 2. 切换界面
                 showBlogContent();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
@@ -87,13 +73,12 @@
         }
 
         function showBlogContent() {
-            // 1. 隐藏密码界面，移除其样式
+            // 隐藏密码界面
             document.getElementById('authBox').style.display = 'none';
             document.body.classList.remove('auth-body');
-            // 2. 显示博客容器
-            const blogContainer = document.getElementById('blogContainer');
-            blogContainer.style.display = 'block';
-            // 3. 动态生成并插入文章列表
+            // 显示博客容器（此时主题的CSS、JS都已加载）
+            document.getElementById('blogContainer').style.display = 'block';
+            // 渲染文章列表
             renderArticleList();
         }
 
@@ -103,35 +88,30 @@
                 container.innerHTML = '<p>暂无文章。</p>';
                 return;
             }
-            let html = '<ul>';
-            // 关键修正：比较前清理字段值首尾的引号，并对清理后的日期字符串进行排序
+            let html = '';
             const articles = siteData.pages
-                .filter(p => p.type.replace(/^"|"$/g, '') === 'posts') // 清理引号后再比较
+                .filter(p => p.type.replace(/^"|"$/g, '') === 'posts')
                 .sort((a, b) => new Date(b.date.replace(/^"|"$/g, '')) - new Date(a.date.replace(/^"|"$/g, '')));
-        
+
+            // 使用更符合主题风格的HTML结构来渲染列表
             articles.forEach(article => {
-                // 在插入时也清理标题和链接的引号，使显示更整洁
                 const cleanTitle = article.title.replace(/^"|"$/g, '');
                 const cleanPermalink = article.permalink.replace(/^"|"$/g, '');
                 const cleanDate = article.date.replace(/^"|"$/g, '');
                 html += `
-                    <li>
-                        <a href="${cleanPermalink}">
-                            <strong>${cleanTitle}</strong>
-                        </a>
-                        <span style="color:#666; font-size:0.9em;"> - ${formatDate(cleanDate)}</span>
-                    </li>
+                    <article class="post-entry">
+                        <header class="entry-header">
+                            <h2><a href="${cleanPermalink}">${cleanTitle}</a></h2>
+                        </header>
+                        <div class="entry-content">
+                            <p><time datetime="${cleanDate}">${new Date(cleanDate).toLocaleDateString('zh-CN')}</time></p>
+                        </div>
+                    </article>
                 `;
             });
-            html += '</ul>';
             container.innerHTML = html;
-        }
-
-        function formatDate(dateStr) {
-            // 清理可能存在的多余引号
-            const cleanDateStr = dateStr.replace(/^"|"$/g, '');
-            return new Date(cleanDateStr).toLocaleDateString('zh-CN');
         }
     </script>
 </body>
 </html>
+{{ end }}
