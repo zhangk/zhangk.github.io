@@ -3,66 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>私人博客 - 验证访问</title>
+    <title>ZhangK's Private Blog</title>
     <style>
-        /* 密码页样式 */
-        body.auth-body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: sans-serif; }
-        .auth-box { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; }
-        /* 博客容器初始隐藏 */
-        #blogContainer { display: none; }
+        /* 初始状态：显示密码页，隐藏博客容器 */
+        #blogContainer {
+            display: none;
+        }
+        .auth-body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .auth-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input, button { padding: 12px; margin: 5px; }
     </style>
 </head>
 <body class="auth-body">
+
     <!-- 密码验证界面 -->
-    <div class="auth-box" id="authBox">
-        <h1>🔒 私人空间</h1>
+    <div id="authBox" class="auth-box">
+        <h2>🔒 私人博客</h2>
         <p>请输入访问密码：</p>
-        <input type="password" id="passwordInput" placeholder="密码" autofocus>
-        <button onclick="validatePassword()">进入博客</button>
-        <p id="errorMsg" style="color:red;display:none;">密码错误</p>
+        <input type="password" id="passwordInput" placeholder="密码" autofocus />
+        <button onclick="validatePassword()">进入</button>
+        <p id="errorMsg" style="color: red; display: none;">密码错误</p>
     </div>
 
-    <!-- 博客内容将动态加载到这里 -->
-    <div id="blogContainer"></div>
+    <!-- 博客内容容器 (验证后显示) -->
+    <div id="blogContainer">
+        <!-- 这里将由JavaScript动态填充博客标题和文章列表 -->
+        <h1>我的博客</h1>
+        <div id="articleList"></div>
+    </div>
 
     <script>
-        // ========== 新增的“守卫逻辑” ==========
-        // 检查URL中是否有我们约定的验证通过标记
-        const urlParams = new URLSearchParams(window.location.search);
-        const isFromAuth = urlParams.has('from') && urlParams.get('from') === 'auth';
-        // 检查本地是否存有正确的认证哈希
-        const isAuthed = localStorage.getItem('auth_hash') === 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'; // 务必替换哈希
-    
-        // 情况1：如果已认证，并且是来自验证后的跳转，则直接显示博客框架，后续由JS填充内容
-        if (isFromAuth && isAuthed) {
-            document.body.classList.remove('auth-body');
-            document.getElementById('authBox').style.display = 'none';
-            document.getElementById('blogContainer').style.display = 'block';
-            // 直接开始加载博客内容（这里会再次fetch，但携带了?from=auth标记）
-            loadBlogContent();
-        }
-        // 情况2：如果已认证，但直接访问首页，则静默重定向到带标记的URL，触发情况1
-        else if (isAuthed && !isFromAuth) {
-            window.location.replace('/?from=auth');
-            // 用replace而不是assign，避免浏览器历史记录出现循环
-        }
-        // 情况3：未认证，什么也不做，正常显示下面的密码界面
-        
+        // ========== 配置 ==========
+        // !!! 重要：替换为你的密码哈希 !!!
         const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
+        // 我们将从Hugo模板注入的文章数据
+        const siteData = window.__HUGO_SITE_DATA__ || { pages: [] };
 
-        // 将加载博客内容的逻辑提取为独立函数
-        async function loadBlogContent() {
-            const blogContainer = document.getElementById('blogContainer');
-            try {
-                const response = await fetch('/?from=auth');
-                const html = await response.text();
-                blogContainer.innerHTML = html;
-                // ... 重新执行JS的代码 ...
-            } catch (error) {
-                console.error('加载博客失败:', error);
-                blogContainer.innerHTML = '<p>抱歉，加载内容时出现错误。</p>';
+        // ========== 主逻辑 ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedHash = localStorage.getItem('auth_hash');
+            
+            if (savedHash === correctHash) {
+                // 已认证，直接显示博客
+                showBlogContent();
+            } else {
+                // 未认证，显示密码界面
+                document.body.classList.add('auth-body');
+                document.getElementById('authBox').style.display = 'block';
             }
-        }
+        });
 
         async function validatePassword() {
             const input = document.getElementById('passwordInput').value;
@@ -73,48 +76,55 @@
             const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
             if (inputHash === correctHash) {
-                // 1. 存储验证状态（使用更持久的localStorage）
+                // 1. 保存认证状态
                 localStorage.setItem('auth_hash', inputHash);
-                // 验证通过后，跳转到带标记的首页，触发“守卫逻辑”的情况1
-                window.location.replace('/?from=auth');
-                // 2. 隐藏密码界面
-                document.getElementById('authBox').style.display = 'none';
-                document.body.classList.remove('auth-body');
-                // 3. 显示博客容器，并加载真正的博客首页内容
-                const blogContainer = document.getElementById('blogContainer');
-                blogContainer.style.display = 'block';
-                // 使用fetch获取由Hugo生成的、真实的博客首页HTML
-                fetch('/?from=auth') // 我们下一步会创建这个文件
-                    .then(r => r.text())
-                    .then(html => {
-                        blogContainer.innerHTML = html;
-                        // 重新执行新加载内容中的JS，让搜索等功能生效
-                        blogContainer.querySelectorAll('script').forEach(oldScript => {
-                            const newScript = document.createElement('script');
-                            if (oldScript.src) {
-                                newScript.src = oldScript.src;
-                            } else {
-                                newScript.textContent = oldScript.textContent;
-                            }
-                            oldScript.parentNode.replaceChild(newScript, oldScript);
-                        });
-                    });
+                // 2. 切换界面
+                showBlogContent();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
             }
         }
 
-        // 页面加载时检查是否已认证
-        if (localStorage.getItem('auth_hash') === correctHash) {
-            // 如果已认证，直接显示博客内容
+        function showBlogContent() {
+            // 1. 隐藏密码界面，移除其样式
             document.getElementById('authBox').style.display = 'none';
             document.body.classList.remove('auth-body');
-            document.getElementById('blogContainer').style.display = 'block';
-            fetch('/index_real.html')
-                .then(r => r.text())
-                .then(html => {
-                    document.getElementById('blogContainer').innerHTML = html;
-                });
+            // 2. 显示博客容器
+            const blogContainer = document.getElementById('blogContainer');
+            blogContainer.style.display = 'block';
+            // 3. 动态生成并插入文章列表
+            renderArticleList();
+        }
+
+        function renderArticleList() {
+            const container = document.getElementById('articleList');
+            if (!siteData.pages || siteData.pages.length === 0) {
+                container.innerHTML = '<p>暂无文章。</p>';
+                return;
+            }
+            let html = '<ul>';
+            // 筛选并排序文章（示例：按日期倒序）
+            const articles = siteData.pages
+                .filter(p => p.type === 'post') // 假设数据类型
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            articles.forEach(article => {
+                html += `
+                    <li>
+                        <a href="${article.permalink}">
+                            <strong>${article.title}</strong>
+                        </a>
+                        <span style="color:#666; font-size:0.9em;"> - ${formatDate(article.date)}</span>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
+        function formatDate(dateStr) {
+            // 简单的日期格式化
+            return new Date(dateStr).toLocaleDateString('zh-CN');
         }
     </script>
 </body>
