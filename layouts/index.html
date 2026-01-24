@@ -46,120 +46,97 @@
     {{ partial "foot.html" . }}
 
     <script>
-        const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
+        // ========== 配置 ==========
+        const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f'; // 务必替换
         const siteData = window.__HUGO_SITE_DATA__ || { pages: [] };
-
-        console.log('[Auth] 脚本加载。Correct hash (前6位):', correctHash.substring(0, 6));
-        
-        // 主初始化函数
-        function initAuth() {
-            console.log('[Auth] initAuth 执行');
+    
+        // ========== 核心逻辑 ==========
+        function checkAuth() {
             const savedHash = localStorage.getItem('auth_hash');
-            console.log('[Auth] 从 localStorage 读取的 savedHash:', savedHash);
-        
-            // 关键逻辑：只有哈希完全一致才视为已认证
-            if (savedHash === correctHash) {
-                console.log('[Auth] 哈希匹配，执行 showBlogContent()');
-                showBlogContent();
+            // 如果本地存储的哈希与正确哈希完全一致，则显示博客内容
+            return savedHash === correctHash;
+        }
+    
+        function showView(isAuthenticated) {
+            const authBox = document.getElementById('authBox');
+            const blogContainer = document.getElementById('blogContainer');
+            if (!authBox || !blogContainer) {
+                console.error('错误：未找到页面上的关键元素 (authBox 或 blogContainer)');
+                return;
+            }
+            if (isAuthenticated) {
+                // 已认证：显示博客，隐藏密码框
+                authBox.style.display = 'none';
+                blogContainer.style.display = 'block';
+                document.body.classList.remove('auth-body');
+                renderArticleList();
             } else {
-                console.log('[Auth] 未认证或哈希不匹配，执行 showPasswordPage()');
-                showPasswordPage();
+                // 未认证：显示密码框，隐藏博客
+                authBox.style.display = 'block';
+                blogContainer.style.display = 'none';
+                document.body.classList.add('auth-body');
             }
         }
-        
-        // 专门显示密码页的函数
-        function showPasswordPage() {
-            console.log('[Auth] 显示密码页');
-            // 1. 确保 body 有正确样式类
-            document.body.classList.add('auth-body');
-            // 2. 确保密码框容器显示
-            const authBox = document.getElementById('authBox');
-            if (authBox) authBox.style.display = 'block';
-            // 3. 确保博客容器隐藏
-            const blogContainer = document.getElementById('blogContainer');
-            if (blogContainer) blogContainer.style.display = 'none';
-        }
-        
-        // 显示博客内容的函数
-        function showBlogContent() {
-            console.log('[Auth] 显示博客内容');
-            // 1. 移除密码页样式
-            document.body.classList.remove('auth-body');
-            // 2. 隐藏密码框
-            const authBox = document.getElementById('authBox');
-            if (authBox) authBox.style.display = 'none';
-            // 3. 显示博客容器
-            const blogContainer = document.getElementById('blogContainer');
-            if (blogContainer) blogContainer.style.display = 'block';
-            // 4. 渲染文章列表
-            renderArticleList();
-        }
-        
-        // 密码验证函数
+    
         async function validatePassword() {
-            console.log('[Auth] 尝试验证密码');
             const input = document.getElementById('passwordInput').value;
             const encoder = new TextEncoder();
             const data = encoder.encode(input);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-            console.log('[Auth] 输入计算出的 hash (前6位):', inputHash.substring(0, 6));
-        
+    
             if (inputHash === correctHash) {
-                console.log('[Auth] 密码正确，存储 hash 并切换界面');
+                // 验证成功：存储哈希，切换视图
                 localStorage.setItem('auth_hash', inputHash);
-                showBlogContent();
+                showView(true);
             } else {
-                console.log('[Auth] 密码错误');
                 document.getElementById('errorMsg').style.display = 'block';
             }
+            return false; // 阻止表单默认提交行为
         }
-        
-        // 渲染文章列表函数（请确保这是你上次成功显示列表的版本）
+    
         function renderArticleList() {
-            console.log('[Auth] 渲染文章列表，数据量:', siteData.pages.length);
             const container = document.getElementById('articleList');
-            if (!container) {
-                console.error('[Auth] 错误：未找到 #articleList 元素');
-                return;
-            }
             if (!siteData.pages || siteData.pages.length === 0) {
                 container.innerHTML = '<p>暂无文章。</p>';
                 return;
             }
-            let html = '<ul>';
+            let html = '';
             const articles = siteData.pages
-                .filter(p => p.type.replace(/^"|"$/g, '') === 'posts')
+                .filter(p => p.type && p.type.replace(/^"|"$/g, '') === 'posts')
                 .sort((a, b) => new Date(b.date.replace(/^"|"$/g, '')) - new Date(a.date.replace(/^"|"$/g, '')));
-        
+    
             articles.forEach(article => {
                 const cleanTitle = article.title.replace(/^"|"$/g, '');
                 const cleanPermalink = article.permalink.replace(/^"|"$/g, '');
                 const cleanDate = article.date.replace(/^"|"$/g, '');
                 html += `
                     <li>
-                        <a href="${cleanPermalink}">
-                            <strong>${cleanTitle}</strong>
-                        </a>
+                        <a href="${cleanPermalink}"><strong>${cleanTitle}</strong></a>
                         <span style="color:#666; font-size:0.9em;"> - ${new Date(cleanDate).toLocaleDateString('zh-CN')}</span>
                     </li>
                 `;
             });
-            html += '</ul>';
-            container.innerHTML = html;
-            console.log('[Auth] 文章列表渲染完成，文章数:', articles.length);
+            container.innerHTML = `<ul>${html}</ul>`;
         }
-        
-        // 启动：监听页面加载
-        window.addEventListener('DOMContentLoaded', initAuth);
-        // 防抖：如果DOM早已加载完成，则直接执行
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initAuth);
-        } else {
-            initAuth();
-        }
+    
+        // ========== 页面加载时初始化 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('密码验证脚本已加载。');
+            // 根据认证状态显示对应界面
+            showView(checkAuth());
+            // 为密码输入框绑定回车键提交
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        validatePassword();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
