@@ -15,4 +15,4 @@ theme = "LoveIt"
   # 最大结果显示数量
   maxResultLength = 20
   wildcard = "enabled"
-  language = “zh”
+  language = "zh"
