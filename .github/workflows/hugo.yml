@@ -44,15 +44,14 @@ jobs:
           find public -maxdepth 1 -type f \( -name "*.json" -o -name "*.html" \) | head -20
 
       - name: Upload Index to Algolia
-        # 使用一个社区维护的、专门为Hugo设计的Algolia上传工具
-        uses: peierlu/algolia-hugo@v1.2.1
-        with:
-          # 指定Hugo生成的索引文件路径
-          index-file: 'public/index.json'
-          # 从GitHub Secrets中读取你在第二阶段设置的机密信息
-          app-id: ${{ secrets.ALGOLIA_APP_ID }}
-          admin-api-key: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          index-name: ${{ secrets.ALGOLIA_INDEX_NAME }}
+        run: |
+          # 1. 安装 Node.js 依赖包
+          npm install atomic-algolia
+          # 2. 通过环境变量传递机密信息，调用工具上传
+          ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }} \
+          ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }} \
+          ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }} \
+          npx atomic-algolia public/index.json
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
