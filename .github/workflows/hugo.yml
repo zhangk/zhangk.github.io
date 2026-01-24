@@ -2,16 +2,14 @@ name: Deploy Hugo to GitHub Pages
 
 on:
   push:
-    branches: ["main"]  # 在 main 分支推送时触发
-  workflow_dispatch:    # 允许在网页手动触发
+    branches: ["main"]
+  workflow_dispatch:
 
-# 为 Pages 部署提供最小必要权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 避免并发部署冲突
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -19,47 +17,41 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # 【核心修改1】声明全局使用你的PAT，用于认证拉取私有仓库
+      TOKEN_FOR_GH: ${{ secrets.GH_PAT_DEPLOY }}
     steps:
-      - name: Checkout
+      - name: Checkout with PAT
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # 拉取主题子模块
-          fetch-depth: 0         # 拉取完整历史，便于某些功能
+          # 【核心修改2】使用PAT拉取代码和子模块
+          token: ${{ env.TOKEN_FOR_GH }}
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: '0.128.0'
-          extended: true         # 如果你需要扩展版功能
+          extended: true
 
-      - name: Build with Debug
-        run: |
-          echo "========== 1. 执行构建并显示处理的模板 =========="
-          hugo --gc --minify --cleanDestinationDir --templateMetrics
-          echo ""
-          echo "========== 2. 检查生成的 public 目录结构 =========="
-          ls -la public/
-          echo ""
-          echo "========== 3. 特别检查根目录的 JSON 和 HTML 文件 =========="
-          find public -maxdepth 1 -type f \( -name "*.json" -o -name "*.html" \) | head -20
+      - name: Build
+        # 【优化修改】恢复为标准构建命令，但保留关键参数
+        run: hugo --gc --minify --cleanDestinationDir --baseURL "https://zhangk.github.io/"
 
       - name: Upload Index to Algolia
         run: |
-          # 1. 安装依赖
           npm install atomic-algolia
-          # 2. 设置所有必需的环境变量
           export ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }}
           export ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }}
           export ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }}
-          # 最关键的一步：指定你的索引文件路径
           export ALGOLIA_INDEX_FILE=$(pwd)/public/index.json
-          # 3. 运行上传工具
           npx atomic-algolia
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public  # 上传整个静态站点目录
+          path: ./public
 
   deploy:
     environment:
