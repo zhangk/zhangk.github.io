@@ -1,8 +1,3 @@
 {
-  "build": {
-    "env": {
-      "HUGO_VERSION": "0.128.0",
-      "HUGO_ENABLE_GIT_INFO": "false"
-    }
-  }
+  "rewrites": [{ "source": "/", "destination": "/api/auth" }]
 }
