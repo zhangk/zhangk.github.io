@@ -1,0 +1,15 @@
+{{- $pages := where .Site.RegularPages "Type" "posts" -}}
+<script>
+window.__HUGO_SITE_DATA__ = {
+    pages: [
+        {{- range $index, $page := $pages -}}
+        {
+            title: {{ $page.Title | jsonify }},
+            date: {{ $page.Date.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+            permalink: {{ $page.Permalink | jsonify }},
+            type: {{ $page.Type | jsonify }}
+        }{{ if not (eq (add $index 1) (len $pages)) }},{{ end }}
+        {{- end -}}
+    ]
+};
+</script>
