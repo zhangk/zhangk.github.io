@@ -45,13 +45,16 @@ jobs:
 
       - name: Upload Index to Algolia
         run: |
-          # 1. 安装 Node.js 依赖包
+          # 1. 安装依赖
           npm install atomic-algolia
-          # 2. 通过环境变量传递机密信息，调用工具上传
-          ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }} \
-          ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }} \
-          ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }} \
-          npx atomic-algolia public/index.json
+          # 2. 设置所有必需的环境变量
+          export ALGOLIA_APP_ID=${{ secrets.ALGOLIA_APP_ID }}
+          export ALGOLIA_ADMIN_KEY=${{ secrets.ALGOLIA_ADMIN_KEY }}
+          export ALGOLIA_INDEX_NAME=${{ secrets.ALGOLIA_INDEX_NAME }}
+          # 最关键的一步：指定你的索引文件路径
+          export ALGOLIA_INDEX_FILE=$(pwd)/public/index.json
+          # 3. 运行上传工具
+          npx atomic-algolia
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
