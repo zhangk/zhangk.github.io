@@ -1,5 +1,8 @@
 // middleware.js - 纯前端验证，无任何依赖
 module.exports = (req, res) => {
+  // --- 调试行：无论是否拦截，都添加一个响应头 ---
+  res.setHeader('X-Debug-Middleware', 'executed');
+  
   // 如果不是访问根路径或HTML页面，直接放行（保证CSS/JS能加载）
   if (!req.url.match(/^\/($|\?|posts\/|page\/|categories\/|tags\/)/)) {
     return;
