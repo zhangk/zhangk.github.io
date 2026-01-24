@@ -36,7 +36,7 @@ jobs:
           extended: true
 
       - name: Build
-        # 【优化修改】恢复为标准构建命令，但保留关键参数
+        # 【优化修改】恢复为标准构建命令，但是保留关键参数
         run: hugo --gc --minify --cleanDestinationDir --baseURL "https://zhangk.github.io/"
 
       - name: Upload Index to Algolia
