@@ -1,117 +1,114 @@
-{{ define "main" }}
-<!doctype html>
-<html lang="{{ .Site.LanguageCode }}">
-<head>
-    <!-- 让Hugo插入主题的所有头部元素（CSS、Meta等） -->
-    {{ partial "head.html" . }}
-    <style>
-        /* 我们自定义的密码页样式，仅在未认证时生效 */
-        .auth-body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-        .auth-box { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.1); text-align: center; }
-        #blogContainer { display: none; } /* 初始隐藏博客容器 */
-    </style>
-    <!-- 注入文章数据 -->
-    {{ partial "blog-data.html" . }}
-</head>
-<body class="auth-body">
-    <!-- 密码验证界面 -->
-    <div id="authBox" class="auth-box">
-        <h2>🔒 私人博客</h2>
-        <p>请输入访问密码：</p>
-        <input type="password" id="passwordInput" placeholder="密码" autofocus />
-        <button onclick="validatePassword()">进入</button>
-        <p id="errorMsg" style="color: red; display: none;">密码错误</p>
-    </div>
+const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
+const siteData = window.__HUGO_SITE_DATA__ || { pages: [] };
 
-    <!-- 博客内容容器 (验证后显示) -->
-    <!-- 这里将包裹整个主题的 body 内容 -->
-    <div id="blogContainer">
-        <!-- 主题的头部导航栏 (应包含搜索框) -->
-        {{ partial "header.html" . }}
-        
-        <!-- 主题的主内容区域 -->
-        <main>
-            <!-- 这里可以显示文章列表，我们稍后填充 -->
-            <div id="dynamicContent">
-                <h1>我的博客</h1>
-                <div id="articleList"></div>
-            </div>
-        </main>
-        
-        <!-- 主题的页脚等 -->
-        {{ partial "footer.html" . }}
-    </div>
+console.log('[Auth] 脚本加载。Correct hash (前6位):', correctHash.substring(0, 6));
 
-    <!-- 让Hugo插入主题的所有尾部JS（包括搜索功能） -->
-    {{ partial "foot.html" . }}
+// 主初始化函数
+function initAuth() {
+    console.log('[Auth] initAuth 执行');
+    const savedHash = localStorage.getItem('auth_hash');
+    console.log('[Auth] 从 localStorage 读取的 savedHash:', savedHash);
 
-    <script>
-        const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
-        const siteData = window.__HUGO_SITE_DATA__ || { pages: [] };
+    // 关键逻辑：只有哈希完全一致才视为已认证
+    if (savedHash === correctHash) {
+        console.log('[Auth] 哈希匹配，执行 showBlogContent()');
+        showBlogContent();
+    } else {
+        console.log('[Auth] 未认证或哈希不匹配，执行 showPasswordPage()');
+        showPasswordPage();
+    }
+}
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedHash = localStorage.getItem('auth_hash');
-            if (savedHash === correctHash) {
-                showBlogContent();
-            }
-        });
+// 专门显示密码页的函数
+function showPasswordPage() {
+    console.log('[Auth] 显示密码页');
+    // 1. 确保 body 有正确样式类
+    document.body.classList.add('auth-body');
+    // 2. 确保密码框容器显示
+    const authBox = document.getElementById('authBox');
+    if (authBox) authBox.style.display = 'block';
+    // 3. 确保博客容器隐藏
+    const blogContainer = document.getElementById('blogContainer');
+    if (blogContainer) blogContainer.style.display = 'none';
+}
 
-        async function validatePassword() {
-            const input = document.getElementById('passwordInput').value;
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+// 显示博客内容的函数
+function showBlogContent() {
+    console.log('[Auth] 显示博客内容');
+    // 1. 移除密码页样式
+    document.body.classList.remove('auth-body');
+    // 2. 隐藏密码框
+    const authBox = document.getElementById('authBox');
+    if (authBox) authBox.style.display = 'none';
+    // 3. 显示博客容器
+    const blogContainer = document.getElementById('blogContainer');
+    if (blogContainer) blogContainer.style.display = 'block';
+    // 4. 渲染文章列表
+    renderArticleList();
+}
 
-            if (inputHash === correctHash) {
-                localStorage.setItem('auth_hash', inputHash);
-                showBlogContent();
-            } else {
-                document.getElementById('errorMsg').style.display = 'block';
-            }
-        }
+// 密码验证函数
+async function validatePassword() {
+    console.log('[Auth] 尝试验证密码');
+    const input = document.getElementById('passwordInput').value;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        function showBlogContent() {
-            // 隐藏密码界面
-            document.getElementById('authBox').style.display = 'none';
-            document.body.classList.remove('auth-body');
-            // 显示博客容器（此时主题的CSS、JS都已加载）
-            document.getElementById('blogContainer').style.display = 'block';
-            // 渲染文章列表
-            renderArticleList();
-        }
+    console.log('[Auth] 输入计算出的 hash (前6位):', inputHash.substring(0, 6));
 
-        function renderArticleList() {
-            const container = document.getElementById('articleList');
-            if (!siteData.pages || siteData.pages.length === 0) {
-                container.innerHTML = '<p>暂无文章。</p>';
-                return;
-            }
-            let html = '';
-            const articles = siteData.pages
-                .filter(p => p.type.replace(/^"|"$/g, '') === 'posts')
-                .sort((a, b) => new Date(b.date.replace(/^"|"$/g, '')) - new Date(a.date.replace(/^"|"$/g, '')));
+    if (inputHash === correctHash) {
+        console.log('[Auth] 密码正确，存储 hash 并切换界面');
+        localStorage.setItem('auth_hash', inputHash);
+        showBlogContent();
+    } else {
+        console.log('[Auth] 密码错误');
+        document.getElementById('errorMsg').style.display = 'block';
+    }
+}
 
-            // 使用更符合主题风格的HTML结构来渲染列表
-            articles.forEach(article => {
-                const cleanTitle = article.title.replace(/^"|"$/g, '');
-                const cleanPermalink = article.permalink.replace(/^"|"$/g, '');
-                const cleanDate = article.date.replace(/^"|"$/g, '');
-                html += `
-                    <article class="post-entry">
-                        <header class="entry-header">
-                            <h2><a href="${cleanPermalink}">${cleanTitle}</a></h2>
-                        </header>
-                        <div class="entry-content">
-                            <p><time datetime="${cleanDate}">${new Date(cleanDate).toLocaleDateString('zh-CN')}</time></p>
-                        </div>
-                    </article>
-                `;
-            });
-            container.innerHTML = html;
-        }
-    </script>
-</body>
-</html>
-{{ end }}
+// 渲染文章列表函数（请确保这是你上次成功显示列表的版本）
+function renderArticleList() {
+    console.log('[Auth] 渲染文章列表，数据量:', siteData.pages.length);
+    const container = document.getElementById('articleList');
+    if (!container) {
+        console.error('[Auth] 错误：未找到 #articleList 元素');
+        return;
+    }
+    if (!siteData.pages || siteData.pages.length === 0) {
+        container.innerHTML = '<p>暂无文章。</p>';
+        return;
+    }
+    let html = '<ul>';
+    const articles = siteData.pages
+        .filter(p => p.type.replace(/^"|"$/g, '') === 'posts')
+        .sort((a, b) => new Date(b.date.replace(/^"|"$/g, '')) - new Date(a.date.replace(/^"|"$/g, '')));
+
+    articles.forEach(article => {
+        const cleanTitle = article.title.replace(/^"|"$/g, '');
+        const cleanPermalink = article.permalink.replace(/^"|"$/g, '');
+        const cleanDate = article.date.replace(/^"|"$/g, '');
+        html += `
+            <li>
+                <a href="${cleanPermalink}">
+                    <strong>${cleanTitle}</strong>
+                </a>
+                <span style="color:#666; font-size:0.9em;"> - ${new Date(cleanDate).toLocaleDateString('zh-CN')}</span>
+            </li>
+        `;
+    });
+    html += '</ul>';
+    container.innerHTML = html;
+    console.log('[Auth] 文章列表渲染完成，文章数:', articles.length);
+}
+
+// 启动：监听页面加载
+window.addEventListener('DOMContentLoaded', initAuth);
+// 防抖：如果DOM早已加载完成，则直接执行
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAuth);
+} else {
+    initAuth();
+}
