@@ -32,9 +32,16 @@ jobs:
           hugo-version: '0.128.0'
           extended: true         # 如果你需要扩展版功能
 
-      - name: Build
-        # 关键：使用 --cleanDestinationDir 确保 index.json 等文件全新生成
-        run: hugo --gc --minify --cleanDestinationDir --baseURL "https://zhangk.github.io/"
+      - name: Build with Debug
+        run: |
+          echo "========== 1. 执行构建并显示处理的模板 =========="
+          hugo --gc --minify --cleanDestinationDir --templateMetrics
+          echo ""
+          echo "========== 2. 检查生成的 public 目录结构 =========="
+          ls -la public/
+          echo ""
+          echo "========== 3. 特别检查根目录的 JSON 和 HTML 文件 =========="
+          find public -maxdepth 1 -type f \( -name "*.json" -o -name "*.html" \) | head -20
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
