@@ -13,4 +13,5 @@ theme = "LoveIt"
   # 搜索结果中显示的内容长度
   contentLength = 4000
   # 最大结果显示数量
-  maxResultLength = 10
+  maxResultLength = 20
+  wildcard = "enabled"
