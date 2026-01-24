@@ -86,7 +86,7 @@
         const correctHash = 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f';
 
         // 验证成功后的跳转地址，默认为博客的真实首页地址
-        const redirectUrlAfterAuth = '/page/1/'; // 如果验证后想跳转到特定页面，可以修改这里
+        const redirectUrlAfterAuth = '/'; // 如果验证后想跳转到特定页面，可以修改这里
 
         async function validatePassword() {
             const input = document.getElementById('passwordInput').value;
@@ -107,9 +107,17 @@
             await new Promise(resolve => setTimeout(resolve, 300));
 
             if (inputHash === correctHash) {
-                // 验证成功：将哈希存入sessionStorage，并跳转
+                // 1. 存储验证状态
                 sessionStorage.setItem('auth_hash', inputHash);
-                window.location.href = redirectUrlAfterAuth;
+                // 2. 直接通过fetch加载真实首页内容并替换当前文档，避免URL跳转循环
+                fetch(redirectUrlAfterAuth)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                    });
+                return;
             } else {
                 // 验证失败
                 errorEl.style.display = 'block';
