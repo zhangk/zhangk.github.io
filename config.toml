@@ -1,4 +1,4 @@
-baseURL = "https://zhangk.github.io/"
+baseURL = "/"
 languageCode = "zh-cn"
 timeZone = "Asia/Shanghai"
 title = "ZhangK’s Blog"
