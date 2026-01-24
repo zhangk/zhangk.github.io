@@ -1,11 +1,17 @@
 baseURL = "/"
-relativeURLs = true
-canonifyURLs = true
 languageCode = "zh-cn"
 timeZone = "Asia/Shanghai"
 title = "ZhangK’s Blog"
 author = "ZhangK"
 theme = "LoveIt"
+
+# ---------- 关键修复 ----------
+# 使用绝对路径，而不是相对路径
+relativeURLs = false
+# 确保URL规范化
+canonifyURLs = true
+# ---------- ---------- ----------
+
 [outputs]
   home = ["HTML", "JSON", "RSS"]
 [params.search]
