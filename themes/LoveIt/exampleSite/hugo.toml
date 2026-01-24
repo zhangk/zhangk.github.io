@@ -111,7 +111,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
   # Author config
   # 作者配置
   [params.author]
-    name = "xxxx"
+    name = "ZhangK"
     email = ""
     link = ""
 
@@ -630,7 +630,7 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
       # Publisher info
       # 出版者信息
       [params.page.seo.publisher]
-        name = "xxxx"
+        name = "ZhangK"
         logoUrl = "/images/avatar.png"
 
   # TypeIt config
@@ -892,14 +892,14 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
           social = true
           disclaimer = ""
       [languages.en.params.social]
-        GitHub = "xxxx"
-        X = "xxxx"
-        Instagram = "xxxx"
-        Facebook = "xxxx"
-        Telegram = "xxxx"
-        Youtubelegacy = "xxxx"
-        HuggingFace = "xxxx"
-        Threads = "xxxx"
+        GitHub = "ZhangK"
+        X = "ZhangK"
+        Instagram = "ZhangK"
+        Facebook = "ZhangK"
+        Telegram = "ZhangK"
+        Youtubelegacy = "ZhangK"
+        HuggingFace = "ZhangK"
+        Threads = "ZhangK"
         Phone = "555-555-555"
         Email = "xxxx@xxxx.com"
         RSS = true
@@ -987,13 +987,13 @@ ignoreErrors = ["error-remote-getjson", "error-missing-instagram-accesstoken"]
           social = true
           disclaimer = ""
       [languages.zh-cn.params.social]
-        GitHub = "xxxx"
-        Weibo = "xxxx"
-        Steam = "xxxx"
-        Zhihu = "xxxx"
-        Douban = "xxxx"
-        Devto = "xxxx"
-        Bilibili = "xxxx"
+        GitHub = "ZhangK"
+        Weibo = "ZhangK"
+        Steam = "ZhangK"
+        Zhihu = "ZhangK"
+        Douban = "ZhangK"
+        Devto = "ZhangK"
+        Bilibili = "ZhangK"
         Email = "xxxx@xxxx.com"
         Phone = "555-555-555"
         RSS = true
