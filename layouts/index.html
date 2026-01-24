@@ -104,11 +104,11 @@
                 return;
             }
             let html = '<ul>';
-            // 筛选并排序文章（示例：按日期倒序）
+            // 关键修改：将过滤条件从 "post" 改为 "posts"
             const articles = siteData.pages
-                .filter(p => p.type === 'post') // 假设数据类型
+                .filter(p => p.type === 'posts') // <-- 这里改成 'posts'
                 .sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+        
             articles.forEach(article => {
                 html += `
                     <li>
@@ -124,8 +124,9 @@
         }
 
         function formatDate(dateStr) {
-            // 简单的日期格式化
-            return new Date(dateStr).toLocaleDateString('zh-CN');
+            // 清理可能存在的多余引号
+            const cleanDateStr = dateStr.replace(/^"|"$/g, '');
+            return new Date(cleanDateStr).toLocaleDateString('zh-CN');
         }
     </script>
 </body>
