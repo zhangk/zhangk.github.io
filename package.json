@@ -1,0 +1,10 @@
+{
+  "name": "zhangk-blog",
+  "version": "1.0.0",
+  "scripts": {
+    "algolia": "atomic-algolia"
+  },
+  "dependencies": {
+    "atomic-algolia": "^0.3.19"
+  }
+}
