@@ -1,12 +1,11 @@
 [build]
-  # 使用 && 连接多个命令，依次执行：安装依赖、构建Hugo、执行加密
-  command = "npm ci && hugo --gc --minify && npm run encrypt"
+  command = "npm install && hugo --gc --minify && npm run encrypt"
   publish = "public"
 
 [build.environment]
   HUGO_VERSION = "0.128.0"
   HUGO_ENV = "production"
-  PASSWORD = "password123"
+  PASSWORD = "password123" # 或用 "$PASSWORD"
 
 [[redirects]]
   from = "/*"
