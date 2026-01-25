@@ -7,4 +7,7 @@
   "dependencies": {
     "atomic-algolia": "^0.3.19"
   }
+  "devDependencies": {
+    "staticrypt": "^3.3.0"
+  }
 }
