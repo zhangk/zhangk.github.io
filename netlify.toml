@@ -1,16 +1,12 @@
 [build]
-  command = "hugo --gc --minify"
+  # 使用 && 连接多个命令，依次执行：安装依赖、构建Hugo、执行加密
+  command = "npm ci && hugo --gc --minify && npm run encrypt"
   publish = "public"
 
-  [build.environment]
-    HUGO_VERSION = "0.128.0"
-    HUGO_ENV = "production"
-    # 设置你的密码（或在后台设置为环境变量）
-    PASSWORD = "password123"
-
-# 关键修正：post_processing 是 [build] 下的独立配置项
-[build.post_processing]
-  command = "npm ci && npm run encrypt"
+[build.environment]
+  HUGO_VERSION = "0.128.0"
+  HUGO_ENV = "production"
+  PASSWORD = "password123"
 
 [[redirects]]
   from = "/*"
