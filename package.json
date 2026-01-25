@@ -2,13 +2,9 @@
   "name": "zhangk-blog",
   "version": "1.0.0",
   "scripts": {
-    "algolia": "atomic-algolia",
-    "encrypt": "find ./public -name '*.html' -exec staticrypt {} $PASSWORD -o {} \\;"
+    "algolia": "atomic-algolia"
   },
   "dependencies": {
     "atomic-algolia": "^0.3.19"
-  },
-  "devDependencies": {
-    "staticrypt": "^3.3.0"
   }
 }
