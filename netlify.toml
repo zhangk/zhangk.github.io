@@ -1,17 +1,17 @@
 [build]
-  command = "hugo --gc --minify"  # 构建命令：清理并压缩
-  publish = "public"              # 发布目录：Hugo默认生成静态文件的文件夹
+  command = "hugo --gc --minify"
+  publish = "public"
 
-# 指定构建环境变量，确保版本一致[citation:5]
-[build.environment]
-  HUGO_VERSION = "0.128.0"        # 必须与你本地或vercel.json中的版本一致
-  HUGO_ENV = "production"
-  PASSWORD = "password123"
+  [build.environment]
+    HUGO_VERSION = "0.128.0"
+    HUGO_ENV = "production"
+    # 设置你的密码（或在后台设置为环境变量）
+    PASSWORD = "password123"
 
-# 新增：构建后处理阶段 - 安装依赖并执行加密
-post_processing = { command = "npm ci && npm run encrypt" }
+# 关键修正：post_processing 是 [build] 下的独立配置项
+[build.post_processing]
+  command = "npm ci && npm run encrypt"
 
-# 可选：配置重定向，对单页应用或解决404问题有帮助
 [[redirects]]
   from = "/*"
   to = "/index.html"
