@@ -6,6 +6,7 @@
 [build.environment]
   HUGO_VERSION = "0.128.0"        # 必须与你本地或vercel.json中的版本一致
   HUGO_ENV = "production"
+  PASSWORD = "password123"
 
 # 可选：配置重定向，对单页应用或解决404问题有帮助
 [[redirects]]
