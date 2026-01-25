@@ -8,6 +8,9 @@
   HUGO_ENV = "production"
   PASSWORD = "password123"
 
+# 新增：构建后处理阶段 - 安装依赖并执行加密
+post_processing = { command = "npm ci && npm run encrypt" }
+
 # 可选：配置重定向，对单页应用或解决404问题有帮助
 [[redirects]]
   from = "/*"
