@@ -1,20 +1,26 @@
 baseURL = "https://zhangk.github.io/"
 languageCode = "zh-cn"
 timeZone = "Asia/Shanghai"
-title = "ZhangK’s Blog"
+title = "ZhangK's Blog"
 author = "ZhangK"
 theme = "LoveIt"
+
 [outputs]
   home = ["HTML", "JSON", "RSS"]
 
+# 摘要配置 - 隐藏文章列表中的内容
 summaryLength = 0
 
-[params.search]
-  enable = true
-  type = "algolia"
-  contentLength = 4000
-  maxResultLength = 10
-  [params.search.algolia]
-    index = "zhangk_blog"
-    appID = "30WY2DYYB1"
-    searchKey = "cdf22c87b449280f726df09efc58b84a"
+[params]
+  # 确保摘要被禁用
+  disableSummary = true
+  
+  [params.search]
+    enable = true
+    type = "algolia"
+    contentLength = 4000
+    maxResultLength = 10
+    [params.search.algolia]
+      index = "zhangk_blog"
+      appID = "30WY2DYYB1"
+      searchKey = "cdf22c87b449280f726df09efc58b84a"
