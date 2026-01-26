@@ -7,12 +7,9 @@ theme = "LoveIt"
 [outputs]
   home = ["HTML", "JSON", "RSS"]
 
-summaryLength = 0
-
 [params]
-  summary = false
-  [params.home]
-    posts = { showSummary = false }
+  # 完全不生成摘要
+  generateSummary = false
   
 [params.search]
   enable = true
