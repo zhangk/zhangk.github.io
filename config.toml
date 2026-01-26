@@ -6,11 +6,6 @@ author = "ZhangK"
 theme = "LoveIt"
 [outputs]
   home = ["HTML", "JSON", "RSS"]
-
-[params]
-  # 完全不生成摘要
-  generateSummary = false
-  
 [params.search]
   enable = true
   type = "algolia"
