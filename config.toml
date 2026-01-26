@@ -6,6 +6,14 @@ author = "ZhangK"
 theme = "LoveIt"
 [outputs]
   home = ["HTML", "JSON", "RSS"]
+
+summaryLength = 0
+
+[params]
+  summary = false
+  [params.home]
+    posts = { showSummary = false }
+  
 [params.search]
   enable = true
   type = "algolia"
