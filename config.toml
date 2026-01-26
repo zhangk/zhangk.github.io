@@ -1,14 +1,22 @@
-baseURL = "https://zhangk.github.io/"
+baseURL = "/"
 languageCode = "zh-cn"
 timeZone = "Asia/Shanghai"
 title = "ZhangK’s Blog"
 author = "ZhangK"
 theme = "LoveIt"
+
+# ---------- 关键修复 ----------
+# 使用绝对路径，而不是相对路径
+relativeURLs = false
+# 确保URL规范化
+canonifyURLs = true
+# ---------- ---------- ----------
+
 [outputs]
   home = ["HTML", "JSON", "RSS"]
 [params.search]
   enable = true
-  type = "algolia"
+  type = "algolia"  # 类型改为 algolia
   contentLength = 4000
   maxResultLength = 10
   [params.search.algolia]
