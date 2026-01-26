@@ -20,7 +20,6 @@ canonifyURLs = true
   contentLength = 4000
   maxResultLength = 10
   [params.search.algolia]
-    index = "zhangk_blog"  # 填写你创建的索引名称
-    appID = "30WY2DYYB1"  # 粘贴你的 Application ID
-    searchKey = "cdf22c87b449280f726df09efc58b84a"  # 粘贴你的 Search-Only API Key
-    # 注意：这里不要填 Admin API Key！
+    index = "zhangk_blog"
+    appID = "30WY2DYYB1"
+    searchKey = "cdf22c87b449280f726df09efc58b84a"
