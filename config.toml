@@ -1,36 +1,17 @@
 baseURL = "https://zhangk.github.io/"
 languageCode = "zh-cn"
 timeZone = "Asia/Shanghai"
-title = "ZhangK's Blog"
+title = "ZhangK’s Blog"
 author = "ZhangK"
 theme = "LoveIt"
-
 [outputs]
   home = ["HTML", "JSON", "RSS"]
-
-# 摘要配置
-summaryLength = 0
-
-[params]
-  # 引入自定义 CSS
-  customCSS = ["css/custom.css"]
-  
-  disableSummary = true
-  
-  [params.home]
-    # 首页文章列表摘要长度
-    postsSummaryLength = 0
-    
-  [params.archive]
-    # 归档页面文章列表摘要长度
-    postsSummaryLength = 0
-  
-  [params.search]
-    enable = true
-    type = "algolia"
-    contentLength = 4000
-    maxResultLength = 10
-    [params.search.algolia]
-      index = "zhangk_blog"
-      appID = "30WY2DYYB1"
-      searchKey = "cdf22c87b449280f726df09efc58b84a"
+[params.search]
+  enable = true
+  type = "algolia"
+  contentLength = 4000
+  maxResultLength = 10
+  [params.search.algolia]
+    index = "zhangk_blog"
+    appID = "30WY2DYYB1"
+    searchKey = "cdf22c87b449280f726df09efc58b84a"
