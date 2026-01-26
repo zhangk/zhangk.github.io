@@ -8,11 +8,13 @@ theme = "LoveIt"
 [outputs]
   home = ["HTML", "JSON", "RSS"]
 
-# 摘要配置 - 隐藏文章列表中的内容
+# 摘要配置
 summaryLength = 0
 
 [params]
-  # 确保摘要被禁用
+  # 引入自定义 CSS
+  customCSS = ["css/custom.css"]
+  
   disableSummary = true
   
   [params.search]
