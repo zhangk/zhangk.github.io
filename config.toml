@@ -17,6 +17,14 @@ summaryLength = 0
   
   disableSummary = true
   
+  [params.home]
+    # 首页文章列表摘要长度
+    postsSummaryLength = 0
+    
+  [params.archive]
+    # 归档页面文章列表摘要长度
+    postsSummaryLength = 0
+  
   [params.search]
     enable = true
     type = "algolia"
